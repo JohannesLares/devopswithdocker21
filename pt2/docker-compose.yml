@@ -1,0 +1,42 @@
+version: '3.5'
+services:
+    frontend:
+        image: frontend
+        build: 
+            context: .
+            dockerfile: Dockerfront
+        ports:
+            - 5000:5000
+    backend:
+        image: backend
+        build: .
+        ports:
+            - 8080:8080
+        environment: 
+            - REDIS_HOST=redis
+            - POSTGRES_HOST=postgres
+            - POSTGRES_PASSWORD=salakala
+            - POSTGRES_USER=kayttis
+            - POSTGRES_DATABASE=testailu
+    redis:
+        image: redis:latest
+        restart: unless-stopped
+        ports:
+            - 6379:6379
+    postgres:
+        image: postgres:latest
+        restart: unless-stopped
+        environment: 
+            - POSTGRES_PASSWORD=salakala
+            - POSTGRES_USER=kayttis
+            - POSTGRES_DB=testailu
+            - PGDATA=/var/lib/postgresql/data/pgdata2
+        volumes:
+            - ./mount/data:/var/lib/postgresql/data/pgdata2
+    nginx:
+        image: nginx:latest
+        restart: unless-stopped
+        volumes:
+            - ./mount/nginx.conf:/etc/nginx/nginx.conf
+        ports:
+            - 80:80
